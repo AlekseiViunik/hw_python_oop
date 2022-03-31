@@ -1,34 +1,35 @@
-from typing import Dict, Type
+from dataclasses import dataclass, asdict
+from typing import Dict, Type, ClassVar
 
 
+@dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
-    def __init__(self,
-                 training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
+
+    training_type: str
+    duration: float
+    distance: float
+    speed: float
+    calories: float
+
+    MESSAGE_CONST: ClassVar[str] = ('Тип тренировки: {training_type}; '
+                                    'Длительность: {duration:.3f} ч.; '
+                                    'Дистанция: {distance:.3f} км; '
+                                    'Ср. скорость: {speed:.3f} км/ч; '
+                                    'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self):
         """Метод, выводящий сообщение о тренировке."""
-        return (f'Тип тренировки: {self.training_type}; '
-                f'Длительность: {self.duration:0.3f} ч.; '
-                f'Дистанция: {self.distance:0.3f} км; '
-                f'Ср. скорость: {self.speed:0.3f} км/ч; '
-                f'Потрачено ккал: {self.calories:0.3f}.')
+        temp_dict: Dict[str, float] = asdict(self)
+        return self.MESSAGE_CONST.format(**temp_dict)
 
 
 class Training:
     """Базовый класс тренировки."""
-    LEN_STEP: float = 0.65
-    M_IN_KM: int = 1000
-    MIN_IN_HOUR: int = 60
+
+    LEN_STEP: ClassVar[float] = 0.65
+    M_IN_KM: ClassVar[float] = 1000
+    MIN_IN_HOUR: ClassVar[float] = 60
 
     def __init__(self,
                  action: int,
@@ -48,7 +49,7 @@ class Training:
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        pass
+        raise NotImplementedError('Methods of some classes are not redefined.')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
@@ -62,14 +63,9 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    RUN_COEF_1: int = 18
-    RUN_COEF_2: int = 20
 
-    def __init__(self,
-                 action: int,
-                 duration: float,
-                 weight: float) -> None:
-        super().__init__(action, duration, weight)
+    RUN_COEF_1: ClassVar[float] = 18
+    RUN_COEF_2: ClassVar[float] = 20
 
     def get_spent_calories(self) -> float:
         return ((self.RUN_COEF_1 * self.get_mean_speed() - self.RUN_COEF_2)
@@ -79,8 +75,9 @@ class Running(Training):
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    WALK_COEF_1: float = 0.035
-    WALK_COEF_2: float = 0.029
+
+    WALK_COEF_1: ClassVar[float] = 0.035
+    WALK_COEF_2: ClassVar[float] = 0.029
 
     def __init__(self,
                  action: int,
@@ -93,12 +90,15 @@ class SportsWalking(Training):
     def get_spent_calories(self) -> float:
         return ((self.WALK_COEF_1 * self.weight + (super().get_mean_speed()**2
                 // self.height) * self.WALK_COEF_2 * self.weight)
-                * self.duration * super().MIN_IN_HOUR)
+                * self.duration * self.MIN_IN_HOUR)
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
+
     LEN_STEP = 1.38
+    SWIM_COEF_1: ClassVar[float] = 1.1
+    SWOM_COEF_2: ClassVar[float] = 2
 
     def __init__(self,
                  action: int,
@@ -116,7 +116,9 @@ class Swimming(Training):
                 / self.duration)
 
     def get_spent_calories(self) -> float:
-        return (self.get_mean_speed() + 1.1) * 2 * self.weight
+        return ((self.get_mean_speed() + self.SWIM_COEF_1)
+                * self.SWOM_COEF_2
+                * self.weight)
 
 
 def read_package(workout_type: str, data: list) -> Training:
@@ -135,11 +137,15 @@ def main(training: Training) -> None:
     print(info.get_message())
 
 
+TIKKER_SWIM: str = 'SWM'
+TIKKER_RUN: str = 'RUN'
+TIKKER_WALK: str = 'WLK'
+
 if __name__ == '__main__':
     packages = [
-        ('SWM', [720, 1, 80, 25, 40]),
-        ('RUN', [15000, 1, 75]),
-        ('WLK', [9000, 1, 75, 180]),
+        (TIKKER_SWIM, [720, 1, 80, 25, 40]),
+        (TIKKER_RUN, [15000, 1, 75]),
+        (TIKKER_WALK, [9000, 1, 75, 180]),
     ]
 
     for workout_type, data in packages:
