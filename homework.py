@@ -1,10 +1,9 @@
 from dataclasses import asdict, dataclass
-from typing import ClassVar, Dict, List, Type, Union
+from typing import ClassVar, Dict, Type, Union
 
 TIKKER_SWIM: str = 'SWM'
 TIKKER_RUN: str = 'RUN'
 TIKKER_WALK: str = 'WLK'
-TYPES_LIST: List[str] = [TIKKER_SWIM, TIKKER_RUN, TIKKER_WALK]
 
 
 @dataclass
@@ -136,11 +135,10 @@ def read_package(workout_type: str, data: list) -> Training:
         TIKKER_RUN: Running,
         TIKKER_WALK: SportsWalking,
     }
-    if workout_type in TYPES_LIST:
+    if workout_type in package:
         return package[workout_type](*data)
-    else:
-        raise ValueError(f'You have entered {workout_type} as workout_type, '
-                         f'should be something from this list: {TYPES_LIST}')
+    raise ValueError(f'You have entered {workout_type} as workout_type, '
+                     f'should be something from this list: {list(package)}')
 
 
 def main(training: Training) -> None:
