@@ -29,3 +29,27 @@ Info message should contain such data as:
 - среднюю скорость на дистанции, в км/ч;
 - расход энергии, в килокалориях.
 ```
+
+## Running project in dev-mode/Запуск проекта в dev-режиме
+
+Clone repository. Install and activate virtual environment./
+Клонировать репозиторий. Установить и активировать виртуальное окружение.
+
+```
+# For Mac or Linux:
+$ python3 -m venv venv
+$ source venv/bin/activate
+
+# For Windows
+$ python3 -m venv venv
+$ source venv/Scripts/activate 
+``` 
+
+Install dependencies  from requirements.txt./
+Установить зависимости из файла requirements.txt.
+
+```
+pip install -r requirements.txt
+``` 
+
+Run the homework.py file./Запустить файл homework.py
